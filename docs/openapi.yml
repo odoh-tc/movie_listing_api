@@ -1,0 +1,1124 @@
+{
+  "openapi": "3.1.0",
+  "info":
+    {
+      "title": "Movie Listing API",
+      "description": "Welcome to the Movie Listing API! This API allows you to manage movies, including adding, viewing, updating, and deleting movies. Enjoy a seamless experience with our authentication, user management, and rating systems.",
+      "version": "1.0.0",
+    },
+  "paths":
+    {
+      "/auth/register":
+        {
+          "post":
+            {
+              "tags": ["authentication"],
+              "summary": "Register",
+              "operationId": "register_auth_register_post",
+              "requestBody":
+                {
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            { "$ref": "#/components/schemas/UserCreate" },
+                        },
+                    },
+                  "required": true,
+                },
+              "responses":
+                {
+                  "201":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__user__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+      "/auth/login":
+        {
+          "post":
+            {
+              "tags": ["authentication"],
+              "summary": "Login",
+              "operationId": "login_auth_login_post",
+              "requestBody":
+                {
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            { "$ref": "#/components/schemas/UserLogin" },
+                        },
+                    },
+                  "required": true,
+                },
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__user__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+      "/auth/login/token":
+        {
+          "post":
+            {
+              "tags": ["authentication"],
+              "summary": "Login Access Token",
+              "operationId": "login_access_token_auth_login_token_post",
+              "requestBody":
+                {
+                  "content":
+                    {
+                      "application/x-www-form-urlencoded":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/Body_login_access_token_auth_login_token_post",
+                            },
+                        },
+                    },
+                  "required": true,
+                },
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                { "$ref": "#/components/schemas/Token" },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+      "/users/me":
+        {
+          "get":
+            {
+              "tags": ["user-management"],
+              "summary": "Get Current User Details",
+              "operationId": "get_current_user_details_users_me_get",
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__user__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                },
+              "security": [{ "OAuth2PasswordBearer": [] }],
+            },
+        },
+      "/movies/":
+        {
+          "post":
+            {
+              "tags": ["movie-catalog"],
+              "summary": "Add Movie",
+              "operationId": "add_movie_movies__post",
+              "security": [{ "OAuth2PasswordBearer": [] }],
+              "requestBody":
+                {
+                  "required": true,
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            { "$ref": "#/components/schemas/MovieCreate" },
+                        },
+                    },
+                },
+              "responses":
+                {
+                  "201":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__movie__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+          "get":
+            {
+              "tags": ["movie-catalog"],
+              "summary": "List Movies",
+              "operationId": "list_movies_movies__get",
+              "parameters":
+                [
+                  {
+                    "name": "skip",
+                    "in": "query",
+                    "required": false,
+                    "schema":
+                      { "type": "integer", "default": 0, "title": "Skip" },
+                  },
+                  {
+                    "name": "limit",
+                    "in": "query",
+                    "required": false,
+                    "schema":
+                      { "type": "integer", "default": 10, "title": "Limit" },
+                  },
+                  {
+                    "name": "search",
+                    "in": "query",
+                    "required": false,
+                    "schema": { "type": "string", "title": "Search" },
+                  },
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__movie__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+      "/movies/{movie_id}":
+        {
+          "get":
+            {
+              "tags": ["movie-catalog"],
+              "summary": "Retrieve Movie",
+              "operationId": "retrieve_movie_movies__movie_id__get",
+              "parameters":
+                [
+                  {
+                    "name": "movie_id",
+                    "in": "path",
+                    "required": true,
+                    "schema":
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "title": "Movie Id",
+                      },
+                  },
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__movie__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+          "put":
+            {
+              "tags": ["movie-catalog"],
+              "summary": "Update Movie",
+              "operationId": "update_movie_movies__movie_id__put",
+              "security": [{ "OAuth2PasswordBearer": [] }],
+              "parameters":
+                [
+                  {
+                    "name": "movie_id",
+                    "in": "path",
+                    "required": true,
+                    "schema":
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "title": "Movie Id",
+                      },
+                  },
+                ],
+              "requestBody":
+                {
+                  "required": true,
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            { "$ref": "#/components/schemas/MovieUpdate" },
+                        },
+                    },
+                },
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__movie__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+          "delete":
+            {
+              "tags": ["movie-catalog"],
+              "summary": "Delete Movie",
+              "operationId": "delete_movie_movies__movie_id__delete",
+              "security": [{ "OAuth2PasswordBearer": [] }],
+              "parameters":
+                [
+                  {
+                    "name": "movie_id",
+                    "in": "path",
+                    "required": true,
+                    "schema":
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "title": "Movie Id",
+                      },
+                  },
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__movie__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+      "/ratings/":
+        {
+          "post":
+            {
+              "tags": ["rating-system"],
+              "summary": "Rate Movie",
+              "operationId": "rate_movie_ratings__post",
+              "requestBody":
+                {
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            { "$ref": "#/components/schemas/RatingCreate" },
+                        },
+                    },
+                  "required": true,
+                },
+              "responses":
+                {
+                  "201":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__rating__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+              "security": [{ "OAuth2PasswordBearer": [] }],
+            },
+        },
+      "/ratings/{movie_id}":
+        {
+          "get":
+            {
+              "tags": ["rating-system"],
+              "summary": "Get Ratings For Movie",
+              "operationId": "get_ratings_for_movie_ratings__movie_id__get",
+              "parameters":
+                [
+                  {
+                    "name": "movie_id",
+                    "in": "path",
+                    "required": true,
+                    "schema":
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "title": "Movie Id",
+                      },
+                  },
+                  {
+                    "name": "skip",
+                    "in": "query",
+                    "required": false,
+                    "schema":
+                      { "type": "integer", "default": 0, "title": "Skip" },
+                  },
+                  {
+                    "name": "limit",
+                    "in": "query",
+                    "required": false,
+                    "schema":
+                      { "type": "integer", "default": 10, "title": "Limit" },
+                  },
+                  {
+                    "name": "rating_score",
+                    "in": "query",
+                    "required": false,
+                    "schema":
+                      {
+                        "allOf":
+                          [{ "$ref": "#/components/schemas/RatingScore" }],
+                        "title": "Rating Score",
+                      },
+                  },
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__rating__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+      "/comments/":
+        {
+          "post":
+            {
+              "tags": ["commentary"],
+              "summary": "Add Comment To Movie",
+              "operationId": "add_comment_to_movie_comments__post",
+              "requestBody":
+                {
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            { "$ref": "#/components/schemas/CommentCreate" },
+                        },
+                    },
+                  "required": true,
+                },
+              "responses":
+                {
+                  "201":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__comment__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+              "security": [{ "OAuth2PasswordBearer": [] }],
+            },
+        },
+      "/comments/{movie_id}":
+        {
+          "get":
+            {
+              "tags": ["commentary"],
+              "summary": "View Comments For Movie",
+              "operationId": "view_comments_for_movie_comments__movie_id__get",
+              "parameters":
+                [
+                  {
+                    "name": "movie_id",
+                    "in": "path",
+                    "required": true,
+                    "schema":
+                      {
+                        "type": "string",
+                        "format": "uuid",
+                        "title": "Movie Id",
+                      },
+                  },
+                  {
+                    "name": "skip",
+                    "in": "query",
+                    "required": false,
+                    "schema":
+                      { "type": "integer", "default": 0, "title": "Skip" },
+                  },
+                  {
+                    "name": "limit",
+                    "in": "query",
+                    "required": false,
+                    "schema":
+                      { "type": "integer", "default": 10, "title": "Limit" },
+                  },
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__comment__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+      "/comments/nested":
+        {
+          "post":
+            {
+              "tags": ["commentary"],
+              "summary": "Add Nested Comment",
+              "operationId": "add_nested_comment_comments_nested_post",
+              "requestBody":
+                {
+                  "content":
+                    {
+                      "application/json":
+                        {
+                          "schema":
+                            {
+                              "$ref": "#/components/schemas/NestedCommentCreate",
+                            },
+                        },
+                    },
+                  "required": true,
+                },
+              "responses":
+                {
+                  "201":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__comment__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+              "security": [{ "OAuth2PasswordBearer": [] }],
+            },
+        },
+      "/":
+        {
+          "get":
+            {
+              "summary": "Root",
+              "operationId": "root__get",
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        { "text/html": { "schema": { "type": "string" } } },
+                    },
+                },
+            },
+        },
+    },
+  "components":
+    {
+      "schemas":
+        {
+          "Body_login_access_token_auth_login_token_post":
+            {
+              "properties":
+                {
+                  "grant_type":
+                    {
+                      "anyOf":
+                        [
+                          { "type": "string", "pattern": "password" },
+                          { "type": "null" },
+                        ],
+                      "title": "Grant Type",
+                    },
+                  "username": { "type": "string", "title": "Username" },
+                  "password": { "type": "string", "title": "Password" },
+                  "scope":
+                    { "type": "string", "title": "Scope", "default": "" },
+                  "client_id":
+                    {
+                      "anyOf": [{ "type": "string" }, { "type": "null" }],
+                      "title": "Client Id",
+                    },
+                  "client_secret":
+                    {
+                      "anyOf": [{ "type": "string" }, { "type": "null" }],
+                      "title": "Client Secret",
+                    },
+                },
+              "type": "object",
+              "required": ["username", "password"],
+              "title": "Body_login_access_token_auth_login_token_post",
+            },
+          "CommentCreate":
+            {
+              "properties":
+                {
+                  "content": { "type": "string", "title": "Content" },
+                  "movie_id":
+                    {
+                      "anyOf":
+                        [
+                          { "type": "string", "format": "uuid" },
+                          { "type": "null" },
+                        ],
+                      "title": "Movie Id",
+                    },
+                },
+              "type": "object",
+              "required": ["content"],
+              "title": "CommentCreate",
+            },
+          "CommentResponse":
+            {
+              "properties":
+                {
+                  "content": { "type": "string", "title": "Content" },
+                  "movie_id":
+                    {
+                      "anyOf":
+                        [
+                          { "type": "string", "format": "uuid" },
+                          { "type": "null" },
+                        ],
+                      "title": "Movie Id",
+                    },
+                  "id": { "type": "string", "format": "uuid", "title": "Id" },
+                  "user_id":
+                    { "type": "string", "format": "uuid", "title": "User Id" },
+                  "parent_comment_id":
+                    {
+                      "anyOf":
+                        [
+                          { "type": "string", "format": "uuid" },
+                          { "type": "null" },
+                        ],
+                      "title": "Parent Comment Id",
+                    },
+                  "replies":
+                    {
+                      "items":
+                        { "$ref": "#/components/schemas/CommentResponse" },
+                      "type": "array",
+                      "title": "Replies",
+                      "default": [],
+                    },
+                  "created_at":
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "title": "Created At",
+                    },
+                  "updated_at":
+                    {
+                      "type": "string",
+                      "format": "date-time",
+                      "title": "Updated At",
+                    },
+                },
+              "type": "object",
+              "required":
+                ["content", "id", "user_id", "created_at", "updated_at"],
+              "title": "CommentResponse",
+            },
+          "HTTPValidationError":
+            {
+              "properties":
+                {
+                  "detail":
+                    {
+                      "items":
+                        { "$ref": "#/components/schemas/ValidationError" },
+                      "type": "array",
+                      "title": "Detail",
+                    },
+                },
+              "type": "object",
+              "title": "HTTPValidationError",
+            },
+          "MovieCreate":
+            {
+              "properties":
+                {
+                  "title": { "type": "string", "title": "Title" },
+                  "description": { "type": "string", "title": "Description" },
+                },
+              "type": "object",
+              "required": ["title", "description"],
+              "title": "MovieCreate",
+            },
+          "MovieUpdate":
+            {
+              "properties":
+                {
+                  "title": { "type": "string", "title": "Title" },
+                  "description": { "type": "string", "title": "Description" },
+                },
+              "type": "object",
+              "required": ["title", "description"],
+              "title": "MovieUpdate",
+            },
+          "NestedCommentCreate":
+            {
+              "properties":
+                {
+                  "content": { "type": "string", "title": "Content" },
+                  "parent_comment_id":
+                    {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "Parent Comment Id",
+                    },
+                },
+              "type": "object",
+              "required": ["content", "parent_comment_id"],
+              "title": "NestedCommentCreate",
+            },
+          "RatingCreate":
+            {
+              "properties":
+                {
+                  "score": { "$ref": "#/components/schemas/RatingScore" },
+                  "review":
+                    {
+                      "anyOf": [{ "type": "string" }, { "type": "null" }],
+                      "title": "Review",
+                    },
+                  "movie_id":
+                    { "type": "string", "format": "uuid", "title": "Movie Id" },
+                },
+              "type": "object",
+              "required": ["score", "movie_id"],
+              "title": "RatingCreate",
+            },
+          "RatingScore":
+            {
+              "type": "integer",
+              "enum": [1, 2, 3, 4, 5],
+              "title": "RatingScore",
+            },
+          "Token":
+            {
+              "properties":
+                {
+                  "access_token": { "type": "string", "title": "Access Token" },
+                  "token_type": { "type": "string", "title": "Token Type" },
+                },
+              "type": "object",
+              "required": ["access_token", "token_type"],
+              "title": "Token",
+            },
+          "UserCreate":
+            {
+              "properties":
+                {
+                  "email":
+                    { "type": "string", "format": "email", "title": "Email" },
+                  "password": { "type": "string", "title": "Password" },
+                },
+              "type": "object",
+              "required": ["email", "password"],
+              "title": "UserCreate",
+            },
+          "UserLogin":
+            {
+              "properties":
+                {
+                  "email":
+                    { "type": "string", "format": "email", "title": "Email" },
+                  "password": { "type": "string", "title": "Password" },
+                },
+              "type": "object",
+              "required": ["email", "password"],
+              "title": "UserLogin",
+            },
+          "ValidationError":
+            {
+              "properties":
+                {
+                  "loc":
+                    {
+                      "items":
+                        {
+                          "anyOf":
+                            [{ "type": "string" }, { "type": "integer" }],
+                        },
+                      "type": "array",
+                      "title": "Location",
+                    },
+                  "msg": { "type": "string", "title": "Message" },
+                  "type": { "type": "string", "title": "Error Type" },
+                },
+              "type": "object",
+              "required": ["loc", "msg", "type"],
+              "title": "ValidationError",
+            },
+          "app__db__schemas__comment__BaseResponse":
+            {
+              "properties":
+                {
+                  "success": { "type": "boolean", "title": "Success" },
+                  "status_code": { "type": "integer", "title": "Status Code" },
+                  "message": { "type": "string", "title": "Message" },
+                  "data":
+                    {
+                      "anyOf":
+                        [
+                          {
+                            "items":
+                              {
+                                "$ref": "#/components/schemas/CommentResponse",
+                              },
+                            "type": "array",
+                          },
+                          { "type": "null" },
+                        ],
+                      "title": "Data",
+                    },
+                },
+              "type": "object",
+              "required": ["success", "status_code", "message"],
+              "title": "BaseResponse",
+            },
+          "app__db__schemas__movie__BaseResponse":
+            {
+              "properties":
+                {
+                  "success": { "type": "boolean", "title": "Success" },
+                  "status_code": { "type": "integer", "title": "Status Code" },
+                  "message": { "type": "string", "title": "Message" },
+                  "data":
+                    { "anyOf": [{}, { "type": "null" }], "title": "Data" },
+                },
+              "type": "object",
+              "required": ["success", "status_code", "message"],
+              "title": "BaseResponse",
+            },
+          "app__db__schemas__rating__BaseResponse":
+            {
+              "properties":
+                {
+                  "success": { "type": "boolean", "title": "Success" },
+                  "status_code": { "type": "integer", "title": "Status Code" },
+                  "message": { "type": "string", "title": "Message" },
+                  "data":
+                    { "anyOf": [{}, { "type": "null" }], "title": "Data" },
+                },
+              "type": "object",
+              "required": ["success", "status_code", "message"],
+              "title": "BaseResponse",
+            },
+          "app__db__schemas__user__BaseResponse":
+            {
+              "properties":
+                {
+                  "success": { "type": "boolean", "title": "Success" },
+                  "status_code": { "type": "integer", "title": "Status Code" },
+                  "message": { "type": "string", "title": "Message" },
+                  "data":
+                    { "anyOf": [{}, { "type": "null" }], "title": "Data" },
+                },
+              "type": "object",
+              "required": ["success", "status_code", "message"],
+              "title": "BaseResponse",
+            },
+        },
+      "securitySchemes":
+        {
+          "OAuth2PasswordBearer":
+            {
+              "type": "oauth2",
+              "flows":
+                {
+                  "password": { "scopes": {}, "tokenUrl": "/auth/login/token" },
+                },
+            },
+        },
+    },
+}
