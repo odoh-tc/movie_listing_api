@@ -11,7 +11,7 @@ services:
       - app-network
     restart: always
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"] # Check if PostgreSQL is ready to accept connections
       interval: 10s
       timeout: 5s
       retries: 5
