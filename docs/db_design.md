@@ -2,11 +2,16 @@
 
 ## Users Table
 
-| Column   | Type    | Description   |
-| -------- | ------- | ------------- |
-| id       | INTEGER | Primary Key   |
-| email    | TEXT    | User email    |
-| password | TEXT    | User password |
+| Column                    | Type     | Description                               |
+| ------------------------- | -------- | ----------------------------------------- |
+| id                        | UUID     | Primary Key                               |
+| email                     | String   | User email address                        |
+| first_name                | String   | User's first name                         |
+| last_name                 | String   | User's last name                          |
+| hashed_password           | String   | Hashed password for authentication        |
+| is_verified               | Boolean  | Indicates if the user's email is verified |
+| verification_token        | String   | Token used for email verification         |
+| verification_token_expiry | DateTime | Expiry date for the verification token    |
 
 - **Relationships:**
   - `movies`: Relationship to `Movie` model, representing movies listed by the user.
@@ -15,12 +20,15 @@
 
 ## Movies Table
 
-| Column      | Type    | Description          |
-| ----------- | ------- | -------------------- |
-| id          | INTEGER | Primary Key          |
-| title       | TEXT    | Movie title          |
-| description | TEXT    | Movie description    |
-| owner_id    | INTEGER | Foreign Key to Users |
+| Column       | Type    | Description                      |
+| ------------ | ------- | -------------------------------- |
+| id           | UUID    | Primary Key                      |
+| title        | String  | Movie title                      |
+| description  | String  | Movie description                |
+| duration     | Integer | Duration of the movie in minutes |
+| release_date | Date    | Release date of the movie        |
+| poster_url   | String  | URL of the movie poster          |
+| owner_id     | UUID    | Foreign Key to Users (owner)     |
 
 - **Relationships:**
   - `owner`: Relationship to `User` model, representing the user who listed the movie.
@@ -29,12 +37,13 @@
 
 ## Ratings Table
 
-| Column   | Type    | Description                        |
-| -------- | ------- | ---------------------------------- |
-| id       | INTEGER | Primary Key                        |
-| movie_id | INTEGER | Foreign Key to Movies              |
-| user_id  | INTEGER | Foreign Key to Users               |
-| score    | INTEGER | Rating score ("1 start"-"5 stars") |
+| Column   | Type    | Description                    |
+| -------- | ------- | ------------------------------ |
+| id       | UUID    | Primary Key                    |
+| score    | Integer | Rating score (e.g., 1-5 stars) |
+| review   | String  | Optional review text           |
+| movie_id | UUID    | Foreign Key to Movies          |
+| user_id  | UUID    | Foreign Key to Users           |
 
 - **Relationships:**
   - `movie`: Relationship to `Movie` model, representing the movie being rated.
@@ -42,13 +51,13 @@
 
 ## Comments Table
 
-| Column            | Type    | Description                                |
-| ----------------- | ------- | ------------------------------------------ |
-| id                | INTEGER | Primary Key                                |
-| content           | TEXT    | Comment content                            |
-| movie_id          | INTEGER | Foreign Key to Movies                      |
-| parent_comment_id | INTEGER | Foreign Key to Comments (self-referential) |
-| user_id           | INTEGER | Foreign Key to Users                       |
+| Column            | Type   | Description                                |
+| ----------------- | ------ | ------------------------------------------ |
+| id                | UUID   | Primary Key                                |
+| content           | String | Comment content                            |
+| movie_id          | UUID   | Foreign Key to Movies                      |
+| parent_comment_id | UUID   | Foreign Key to Comments (self-referential) |
+| user_id           | UUID   | Foreign Key to Users                       |
 
 - **Relationships:**
   - `user`: Relationship to `User` model, representing the user who made the comment.

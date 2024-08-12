@@ -4,7 +4,7 @@ from app.db.models.rating import Rating
 from app.db.schemas.rating import RatingCreate, RatingScore
 from typing import List, Optional
 from sqlalchemy import func, cast, Integer
-from app.logger.logger import logger
+from app.utils.logger import logger
 from sqlalchemy.orm.exc import NoResultFound
 from uuid import UUID
 
@@ -13,8 +13,6 @@ def get_user_rating_for_movie(db: Session, user_id: UUID, movie_id: UUID) -> Opt
 
 def create_or_update_rating(db: Session, rating: RatingCreate, user_id: UUID) -> Rating:
     logger.debug(f"Checking for existing rating for user_id: {user_id} and movie_id: {rating.movie_id}")
-    
-    # Check if the movie_id exists
     movie = db.query(Movie).filter(Movie.id == rating.movie_id).first()
     if not movie:
         logger.error(f"Movie with id {rating.movie_id} not found")
@@ -39,14 +37,14 @@ def create_or_update_rating(db: Session, rating: RatingCreate, user_id: UUID) ->
 
     return db_rating
 
+
 def get_aggregated_rating(db: Session, movie_id: UUID) -> float:
     avg_rating = db.query(func.avg(cast(Rating.score, Integer))).filter(Rating.movie_id == movie_id).scalar()
     return avg_rating
 
+
 def get_ratings(db: Session, movie_id: UUID, skip: int = 0, limit: int = 10, rating_score: RatingScore = None):
-    logger.debug(f"Fetching ratings for movie_id: {movie_id} with filter rating_score: {rating_score}")
-    
-    # Check if the movie_id exists
+    logger.debug(f"Fetching ratings for movie_id: {movie_id} with filter rating_score: {rating_score}") 
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
         logger.error(f"Movie with id {movie_id} not found")

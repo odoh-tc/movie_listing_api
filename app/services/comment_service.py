@@ -11,7 +11,7 @@ from app.crud.crud_comment import (
     create_nested_comment as crud_create_nested_comment
 )
 from app.db.schemas.comment import CommentCreate, NestedCommentCreate, CommentResponse
-from app.logger.logger import logger
+from app.utils.logger import logger
 
 
 class CustomJSONEncoder(json.JSONEncoder):

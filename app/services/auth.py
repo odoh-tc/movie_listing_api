@@ -1,17 +1,18 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
+from uuid import uuid4
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from app.core.config import settings
 from app.core.security import create_access_token, verify_password
-from app.db.schemas.user import UserCreate, Token, UserLogin
-from app.crud.crud_user import create_user, get_user_by_email
+from app.db.schemas.user import UserCreate, Token
+from app.crud.crud_user import create_user, get_user_by_email, get_user_by_verification_token
 from fastapi.security import OAuth2PasswordBearer
 from app.db.models.user import User as DBUser
 from app.db.session import get_db
-from app.logger.logger import logger
-from uuid import UUID
+from app.utils.logger import logger
+from app.utils.email import send_verification_email
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/token")
@@ -43,6 +44,8 @@ def register_user(user: UserCreate, db: Session):
     logger.info(f"User registered successfully: {user.email}")
     return new_user
 
+
+
 def authenticate_user(email: str, password: str, db: Session):
     logger.info(f"Authenticating user: {email}")
     user = get_user_by_email(db, email)
@@ -65,3 +68,63 @@ def login_for_access_token(email: str, password: str, db: Session):
     access_token = create_access_token(data={"sub": user.email}, expires_delta=access_token_expires)
     logger.info(f"Access token generated for user: {email}")
     return Token(access_token=access_token, token_type="bearer")
+
+
+def verify_user_email(token: str, db: Session):
+    logger.info(f"Verifying user email with token: {token}")
+    user = get_user_by_verification_token(db, token)
+    
+    if not user:
+        logger.warning("Invalid or expired token")
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    
+    if user.is_verified:
+        logger.warning("User email already verified")
+        raise HTTPException(status_code=400, detail="User email already verified")
+
+    current_time = datetime.utcnow()
+    logger.info(f"Current time: {current_time}, Token expiry: {user.verification_token_expiry}")
+    
+    if current_time > user.verification_token_expiry:
+        logger.warning("Expired verification token")
+        user.verification_token = None
+        user.verification_token_expiry = None
+        db.commit()
+        raise HTTPException(status_code=400, detail="Expired token, please request a new verification email")
+
+    try:
+        user.is_verified = True
+        user.verification_token = None
+        user.verification_token_expiry = None
+        db.commit()
+        logger.info(f"User verified successfully: {user.email}")
+    except Exception as e:
+        logger.error(f"Error during user verification: {str(e)}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while verifying the email. Please try again.")
+    
+    return user
+
+
+
+def resend_verification_email(email: str, db: Session):
+    logger.info(f"Resending verification email for user: {email}")
+    user = get_user_by_email(db, email)
+    if not user:
+        logger.warning("User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    if user.is_verified:
+        logger.warning("User email already verified")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already verified")
+
+    verification_token = str(uuid4())
+    verification_token_expiry = datetime.utcnow() + timedelta(hours=settings.VERIFICATION_TOKEN_EXPIRE_HOURS)
+
+    user.verification_token = verification_token
+    user.verification_token_expiry = verification_token_expiry
+    db.commit()
+
+    send_verification_email(user.email, verification_token)
+    logger.info(f"Verification email sent to user: {email}")
+    return user

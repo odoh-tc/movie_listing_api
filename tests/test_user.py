@@ -4,10 +4,13 @@ from app.db.schemas.user import UserCreate
 from app.services.auth import register_user
 from fastapi import status
 
-def test_get_current_user_details(client, db: Session):
+@pytest.fixture
+def auth_headers(client, db: Session):
     user_data = {
         "email": "test@example.com",
-        "password": "password123"
+        "password": "password123",
+        "first_name": "John",
+        "last_name": "Doe"
     }
     register_user(UserCreate(**user_data), db)
 

@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.db.schemas.comment import CommentCreate, CommentResponse, NestedCommentCreate, BaseResponse
@@ -11,12 +11,15 @@ from app.services.comment_service import (
     create_nested_comment_service
 )
 from app.db.models.user import User
-from app.logger.logger import logger
+from app.utils.logger import logger
+from app.utils.rate_limiter import limiter
+
 
 router = APIRouter()
 
 @router.post("/", response_model=BaseResponse, status_code=status.HTTP_201_CREATED)
-async def add_comment_to_movie(comment: CommentCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+async def add_comment_to_movie(request: Request, comment: CommentCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         logger.debug(f"Request to add comment: {comment} from user_id: {current_user.id}")
         comment_data = await create_comment_service(db, comment, current_user.id)
@@ -28,7 +31,8 @@ async def add_comment_to_movie(comment: CommentCreate, db: Session = Depends(get
 
 
 @router.get("/{movie_id}", response_model=BaseResponse, status_code=status.HTTP_200_OK)
-async def view_comments_for_movie(movie_id: UUID, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+@limiter.limit("20/minute")
+async def view_comments_for_movie(request: Request, movie_id: UUID, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     try:
         logger.debug(f"Request to view comments for movie_id: {movie_id}, skip: {skip}, limit: {limit}")
         comments = await get_comments_service(db, movie_id, skip=skip, limit=limit)
@@ -39,7 +43,8 @@ async def view_comments_for_movie(movie_id: UUID, skip: int = 0, limit: int = 10
         raise e
 
 @router.post("/nested", response_model=BaseResponse, status_code=status.HTTP_201_CREATED)
-async def add_nested_comment(nested_comment: NestedCommentCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@limiter.limit("10/minute")
+async def add_nested_comment(request: Request, nested_comment: NestedCommentCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         logger.debug(f"Request to add nested comment: {nested_comment} from user_id: {current_user.id}")
         comment_data = await create_nested_comment_service(db, nested_comment, current_user.id)

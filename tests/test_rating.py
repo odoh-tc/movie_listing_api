@@ -10,9 +10,12 @@ from app.db.schemas.rating import RatingScore
 def auth_headers(client, db: Session):
     user_data = {
         "email": "test@example.com",
-        "password": "password123"
+        "password": "password123",
+        "first_name": "John",
+        "last_name": "Doe"
     }
     register_user(UserCreate(**user_data), db)
+
     response = client.post("/auth/login/token", data={"username": user_data["email"], "password": user_data["password"]})
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}

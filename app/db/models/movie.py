@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy import Column, String, ForeignKey, Date, Integer
 from sqlalchemy.orm import relationship
 from app.db.session import Base
 from app.db.timestamp import Timestamp
@@ -10,8 +10,11 @@ class Movie(Base, Timestamp):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     title = Column(String, index=True)
     description = Column(String)
+    duration = Column(Integer)
+    release_date = Column(Date)
+    poster_url = Column(String)
     owner_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="movies")
-    ratings = relationship("Rating", back_populates="movie")
-    comments = relationship("Comment", back_populates="movie")
+    ratings = relationship("Rating", back_populates="movie", cascade="all, delete-orphan")
+    comments = relationship("Comment", back_populates="movie", cascade="all, delete-orphan")

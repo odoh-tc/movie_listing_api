@@ -164,6 +164,105 @@
                 },
             },
         },
+      "/auth/verify-email":
+        {
+          "get":
+            {
+              "tags": ["authentication"],
+              "summary": "Verify Email",
+              "operationId": "verify_email_auth_verify_email_get",
+              "parameters":
+                [
+                  {
+                    "name": "token",
+                    "in": "query",
+                    "required": true,
+                    "schema": { "type": "string", "title": "Token" },
+                  },
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__user__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+      "/auth/resend-verification":
+        {
+          "post":
+            {
+              "tags": ["authentication"],
+              "summary": "Resend Verification",
+              "operationId": "resend_verification_auth_resend_verification_post",
+              "parameters":
+                [
+                  {
+                    "name": "email",
+                    "in": "query",
+                    "required": true,
+                    "schema":
+                      { "type": "string", "format": "email", "title": "Email" },
+                  },
+                ],
+              "responses":
+                {
+                  "200":
+                    {
+                      "description": "Successful Response",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/app__db__schemas__user__BaseResponse",
+                                },
+                            },
+                        },
+                    },
+                  "422":
+                    {
+                      "description": "Validation Error",
+                      "content":
+                        {
+                          "application/json":
+                            {
+                              "schema":
+                                {
+                                  "$ref": "#/components/schemas/HTTPValidationError",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
       "/users/me":
         {
           "get":
@@ -255,20 +354,31 @@
                     "in": "query",
                     "required": false,
                     "schema":
-                      { "type": "integer", "default": 0, "title": "Skip" },
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "default": 0,
+                        "title": "Skip",
+                      },
                   },
                   {
                     "name": "limit",
                     "in": "query",
                     "required": false,
                     "schema":
-                      { "type": "integer", "default": 10, "title": "Limit" },
+                      {
+                        "type": "integer",
+                        "minimum": 1,
+                        "default": 10,
+                        "title": "Limit",
+                      },
                   },
                   {
                     "name": "search",
                     "in": "query",
                     "required": false,
-                    "schema": { "type": "string", "title": "Search" },
+                    "schema":
+                      { "type": "string", "maxLength": 100, "title": "Search" },
                   },
                 ],
               "responses":
@@ -443,20 +553,7 @@
                 ],
               "responses":
                 {
-                  "200":
-                    {
-                      "description": "Successful Response",
-                      "content":
-                        {
-                          "application/json":
-                            {
-                              "schema":
-                                {
-                                  "$ref": "#/components/schemas/app__db__schemas__movie__BaseResponse",
-                                },
-                            },
-                        },
-                    },
+                  "204": { "description": "Successful Response" },
                   "422":
                     {
                       "description": "Validation Error",
@@ -786,8 +883,8 @@
         {
           "get":
             {
-              "summary": "Root",
-              "operationId": "root__get",
+              "summary": "Home Page",
+              "operationId": "home_page__get",
               "responses":
                 {
                   "200":
@@ -840,7 +937,12 @@
             {
               "properties":
                 {
-                  "content": { "type": "string", "title": "Content" },
+                  "content":
+                    {
+                      "type": "string",
+                      "title": "Content",
+                      "description": "The content of the comment",
+                    },
                   "movie_id":
                     {
                       "anyOf":
@@ -849,6 +951,7 @@
                           { "type": "null" },
                         ],
                       "title": "Movie Id",
+                      "description": "ID of the movie associated with the comment",
                     },
                 },
               "type": "object",
@@ -859,7 +962,12 @@
             {
               "properties":
                 {
-                  "content": { "type": "string", "title": "Content" },
+                  "content":
+                    {
+                      "type": "string",
+                      "title": "Content",
+                      "description": "The content of the comment",
+                    },
                   "movie_id":
                     {
                       "anyOf":
@@ -868,10 +976,22 @@
                           { "type": "null" },
                         ],
                       "title": "Movie Id",
+                      "description": "ID of the movie associated with the comment",
                     },
-                  "id": { "type": "string", "format": "uuid", "title": "Id" },
+                  "id":
+                    {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "Id",
+                      "description": "Unique identifier for the comment",
+                    },
                   "user_id":
-                    { "type": "string", "format": "uuid", "title": "User Id" },
+                    {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "User Id",
+                      "description": "Unique identifier for the user who made the comment",
+                    },
                   "parent_comment_id":
                     {
                       "anyOf":
@@ -880,6 +1000,7 @@
                           { "type": "null" },
                         ],
                       "title": "Parent Comment Id",
+                      "description": "ID of the parent comment if this is a reply",
                     },
                   "replies":
                     {
@@ -887,19 +1008,21 @@
                         { "$ref": "#/components/schemas/CommentResponse" },
                       "type": "array",
                       "title": "Replies",
-                      "default": [],
+                      "description": "List of replies to this comment",
                     },
                   "created_at":
                     {
                       "type": "string",
                       "format": "date-time",
                       "title": "Created At",
+                      "description": "Timestamp when the comment was created",
                     },
                   "updated_at":
                     {
                       "type": "string",
                       "format": "date-time",
                       "title": "Updated At",
+                      "description": "Timestamp when the comment was last updated",
                     },
                 },
               "type": "object",
@@ -926,8 +1049,44 @@
             {
               "properties":
                 {
-                  "title": { "type": "string", "title": "Title" },
-                  "description": { "type": "string", "title": "Description" },
+                  "title":
+                    {
+                      "type": "string",
+                      "title": "Title",
+                      "description": "The title of the movie",
+                    },
+                  "description":
+                    {
+                      "type": "string",
+                      "title": "Description",
+                      "description": "A brief description of the movie",
+                    },
+                  "duration":
+                    {
+                      "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                      "title": "Duration",
+                      "description": "Duration of the movie in minutes",
+                    },
+                  "release_date":
+                    {
+                      "anyOf":
+                        [
+                          { "type": "string", "format": "date" },
+                          { "type": "null" },
+                        ],
+                      "title": "Release Date",
+                      "description": "The release date of the movie",
+                    },
+                  "poster_url":
+                    {
+                      "anyOf":
+                        [
+                          { "type": "string", "minLength": 1, "format": "uri" },
+                          { "type": "null" },
+                        ],
+                      "title": "Poster Url",
+                      "description": "URL to the movie's poster image",
+                    },
                 },
               "type": "object",
               "required": ["title", "description"],
@@ -937,23 +1096,64 @@
             {
               "properties":
                 {
-                  "title": { "type": "string", "title": "Title" },
-                  "description": { "type": "string", "title": "Description" },
+                  "title":
+                    {
+                      "anyOf": [{ "type": "string" }, { "type": "null" }],
+                      "title": "Title",
+                      "description": "The title of the movie",
+                    },
+                  "description":
+                    {
+                      "anyOf": [{ "type": "string" }, { "type": "null" }],
+                      "title": "Description",
+                      "description": "A brief description of the movie",
+                    },
+                  "duration":
+                    {
+                      "anyOf": [{ "type": "integer" }, { "type": "null" }],
+                      "title": "Duration",
+                      "description": "Duration of the movie in minutes",
+                    },
+                  "release_date":
+                    {
+                      "anyOf":
+                        [
+                          { "type": "string", "format": "date" },
+                          { "type": "null" },
+                        ],
+                      "title": "Release Date",
+                      "description": "The release date of the movie",
+                    },
+                  "poster_url":
+                    {
+                      "anyOf":
+                        [
+                          { "type": "string", "minLength": 1, "format": "uri" },
+                          { "type": "null" },
+                        ],
+                      "title": "Poster Url",
+                      "description": "URL to the movie's poster image",
+                    },
                 },
               "type": "object",
-              "required": ["title", "description"],
               "title": "MovieUpdate",
             },
           "NestedCommentCreate":
             {
               "properties":
                 {
-                  "content": { "type": "string", "title": "Content" },
+                  "content":
+                    {
+                      "type": "string",
+                      "title": "Content",
+                      "description": "The content of the nested comment",
+                    },
                   "parent_comment_id":
                     {
                       "type": "string",
                       "format": "uuid",
                       "title": "Parent Comment Id",
+                      "description": "ID of the parent comment",
                     },
                 },
               "type": "object",
@@ -964,14 +1164,24 @@
             {
               "properties":
                 {
-                  "score": { "$ref": "#/components/schemas/RatingScore" },
+                  "score":
+                    {
+                      "allOf": [{ "$ref": "#/components/schemas/RatingScore" }],
+                      "description": "The rating score, from 1 to 5",
+                    },
                   "review":
                     {
                       "anyOf": [{ "type": "string" }, { "type": "null" }],
                       "title": "Review",
+                      "description": "Optional review text accompanying the rating",
                     },
                   "movie_id":
-                    { "type": "string", "format": "uuid", "title": "Movie Id" },
+                    {
+                      "type": "string",
+                      "format": "uuid",
+                      "title": "Movie Id",
+                      "description": "ID of the movie being rated",
+                    },
                 },
               "type": "object",
               "required": ["score", "movie_id"],
@@ -987,8 +1197,18 @@
             {
               "properties":
                 {
-                  "access_token": { "type": "string", "title": "Access Token" },
-                  "token_type": { "type": "string", "title": "Token Type" },
+                  "access_token":
+                    {
+                      "type": "string",
+                      "title": "Access Token",
+                      "description": "JWT access token",
+                    },
+                  "token_type":
+                    {
+                      "type": "string",
+                      "title": "Token Type",
+                      "description": "Type of the token, usually 'bearer'",
+                    },
                 },
               "type": "object",
               "required": ["access_token", "token_type"],
@@ -999,11 +1219,33 @@
               "properties":
                 {
                   "email":
-                    { "type": "string", "format": "email", "title": "Email" },
-                  "password": { "type": "string", "title": "Password" },
+                    {
+                      "type": "string",
+                      "format": "email",
+                      "title": "Email",
+                      "description": "The user's email address",
+                    },
+                  "first_name":
+                    {
+                      "type": "string",
+                      "title": "First Name",
+                      "description": "The user's first name",
+                    },
+                  "last_name":
+                    {
+                      "type": "string",
+                      "title": "Last Name",
+                      "description": "The user's last name",
+                    },
+                  "password":
+                    {
+                      "type": "string",
+                      "title": "Password",
+                      "description": "The user's password",
+                    },
                 },
               "type": "object",
-              "required": ["email", "password"],
+              "required": ["email", "first_name", "last_name", "password"],
               "title": "UserCreate",
             },
           "UserLogin":
@@ -1011,8 +1253,18 @@
               "properties":
                 {
                   "email":
-                    { "type": "string", "format": "email", "title": "Email" },
-                  "password": { "type": "string", "title": "Password" },
+                    {
+                      "type": "string",
+                      "format": "email",
+                      "title": "Email",
+                      "description": "The user's email address",
+                    },
+                  "password":
+                    {
+                      "type": "string",
+                      "title": "Password",
+                      "description": "The user's password",
+                    },
                 },
               "type": "object",
               "required": ["email", "password"],
@@ -1043,9 +1295,24 @@
             {
               "properties":
                 {
-                  "success": { "type": "boolean", "title": "Success" },
-                  "status_code": { "type": "integer", "title": "Status Code" },
-                  "message": { "type": "string", "title": "Message" },
+                  "success":
+                    {
+                      "type": "boolean",
+                      "title": "Success",
+                      "description": "Indicates whether the request was successful",
+                    },
+                  "status_code":
+                    {
+                      "type": "integer",
+                      "title": "Status Code",
+                      "description": "HTTP status code of the response",
+                    },
+                  "message":
+                    {
+                      "type": "string",
+                      "title": "Message",
+                      "description": "Response message detailing the result",
+                    },
                   "data":
                     {
                       "anyOf":
@@ -1060,6 +1327,7 @@
                           { "type": "null" },
                         ],
                       "title": "Data",
+                      "description": "Response data containing comments",
                     },
                 },
               "type": "object",
@@ -1070,11 +1338,30 @@
             {
               "properties":
                 {
-                  "success": { "type": "boolean", "title": "Success" },
-                  "status_code": { "type": "integer", "title": "Status Code" },
-                  "message": { "type": "string", "title": "Message" },
+                  "success":
+                    {
+                      "type": "boolean",
+                      "title": "Success",
+                      "description": "Indicates whether the request was successful",
+                    },
+                  "status_code":
+                    {
+                      "type": "integer",
+                      "title": "Status Code",
+                      "description": "HTTP status code of the response",
+                    },
+                  "message":
+                    {
+                      "type": "string",
+                      "title": "Message",
+                      "description": "Response message detailing the result",
+                    },
                   "data":
-                    { "anyOf": [{}, { "type": "null" }], "title": "Data" },
+                    {
+                      "anyOf": [{}, { "type": "null" }],
+                      "title": "Data",
+                      "description": "Response data containing movies or related information",
+                    },
                 },
               "type": "object",
               "required": ["success", "status_code", "message"],
@@ -1084,11 +1371,30 @@
             {
               "properties":
                 {
-                  "success": { "type": "boolean", "title": "Success" },
-                  "status_code": { "type": "integer", "title": "Status Code" },
-                  "message": { "type": "string", "title": "Message" },
+                  "success":
+                    {
+                      "type": "boolean",
+                      "title": "Success",
+                      "description": "Indicates whether the request was successful",
+                    },
+                  "status_code":
+                    {
+                      "type": "integer",
+                      "title": "Status Code",
+                      "description": "HTTP status code of the response",
+                    },
+                  "message":
+                    {
+                      "type": "string",
+                      "title": "Message",
+                      "description": "Response message detailing the result",
+                    },
                   "data":
-                    { "anyOf": [{}, { "type": "null" }], "title": "Data" },
+                    {
+                      "anyOf": [{}, { "type": "null" }],
+                      "title": "Data",
+                      "description": "Response data containing ratings or related information",
+                    },
                 },
               "type": "object",
               "required": ["success", "status_code", "message"],
@@ -1098,11 +1404,30 @@
             {
               "properties":
                 {
-                  "success": { "type": "boolean", "title": "Success" },
-                  "status_code": { "type": "integer", "title": "Status Code" },
-                  "message": { "type": "string", "title": "Message" },
+                  "success":
+                    {
+                      "type": "boolean",
+                      "title": "Success",
+                      "description": "Indicates whether the request was successful",
+                    },
+                  "status_code":
+                    {
+                      "type": "integer",
+                      "title": "Status Code",
+                      "description": "HTTP status code of the response",
+                    },
+                  "message":
+                    {
+                      "type": "string",
+                      "title": "Message",
+                      "description": "Response message detailing the result",
+                    },
                   "data":
-                    { "anyOf": [{}, { "type": "null" }], "title": "Data" },
+                    {
+                      "anyOf": [{}, { "type": "null" }],
+                      "title": "Data",
+                      "description": "Response data containing user information or related data",
+                    },
                 },
               "type": "object",
               "required": ["success", "status_code", "message"],

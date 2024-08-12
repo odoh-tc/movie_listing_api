@@ -8,7 +8,9 @@ from app.services.auth import register_user
 def auth_headers(client, db: Session):
     user_data = {
         "email": "test@example.com",
-        "password": "password123"
+        "password": "password123",
+        "first_name": "John",
+        "last_name": "Doe"
     }
     register_user(UserCreate(**user_data), db)
 

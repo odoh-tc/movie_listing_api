@@ -10,7 +10,15 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     TEST_DATABASE_URL: str
     TESTING: bool
-
+    SMTP_SERVER: str
+    SMTP_PORT: int
+    SMTP_SENDER: str
+    SMTP_PASSWORD: str
+    BASE_URL: str
+    VERIFICATION_TOKEN_EXPIRE_HOURS: int
+    PAPERTRAIL_URL: str
+    PAPERTRAIL_PORT: int
+    
 
     
     class Config:

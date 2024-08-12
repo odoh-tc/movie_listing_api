@@ -1,5 +1,5 @@
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.types import ASGIApp, Scope, Receive, Send
+from starlette.types import ASGIApp
 from fastapi import Request, HTTPException
 
 class AuthMiddleware(BaseHTTPMiddleware):

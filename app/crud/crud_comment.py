@@ -5,7 +5,7 @@ from app.db.models.comment import Comment
 from app.db.models.movie import Movie
 from app.db.schemas.comment import CommentCreate, NestedCommentCreate
 from app.db.models.user import User
-from app.logger.logger import logger
+from app.utils.logger import logger
 
 def create_comment(db: Session, comment: CommentCreate, user_id: UUID):
     movie = db.query(Movie).filter(Movie.id == comment.movie_id).first()
