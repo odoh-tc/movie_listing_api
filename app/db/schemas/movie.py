@@ -1,7 +1,16 @@
+from enum import Enum
 from typing import Any, Optional
 from pydantic import AnyUrl, BaseModel, ConfigDict, Field, validator
 from datetime import datetime, date
 from uuid import UUID
+
+
+
+
+class SortByEnum(str, Enum):
+    most_rated = "most_rated"
+    most_recent = "most_recent"
+    most_rated_and_recent = "most_rated_and_recent"
 
 class MovieBase(BaseModel):
     title: str = Field(..., description="The title of the movie")
@@ -10,12 +19,12 @@ class MovieBase(BaseModel):
     release_date: Optional[date] = Field(None, description="The release date of the movie")
     poster_url: Optional[AnyUrl] = Field(None, description="URL to the movie's poster image")
 
+
     @validator('duration')
     def validate_duration(cls, v):
         if v is not None and v <= 0:
             raise ValueError('Duration must be greater than zero')
         return v
-
 
 class MovieCreate(MovieBase):
     pass
@@ -32,7 +41,6 @@ class MovieUpdate(BaseModel):
         if v is not None and v <= 0:
             raise ValueError('Duration must be greater than zero')
         return v
-    
 
 
 class MovieResponse(MovieBase):

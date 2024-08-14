@@ -32,8 +32,8 @@ async def get_ratings_service(db: Session, movie_id: UUID, skip: int = 0, limit:
         ratings, aggregated_rating = crud_get_ratings(db, movie_id, skip, limit, rating_score)
         logger.info(f"Fetched {len(ratings)} ratings and aggregated rating for movie_id: {movie_id}")
         return RatingsWithAggregation(
-            ratings=[RatingResponse.from_orm(rating) for rating in ratings],
-            aggregated_rating=AggregatedRating(average_score=aggregated_rating)
+            aggregated_rating=AggregatedRating(average_score=aggregated_rating),
+            ratings=[RatingResponse.from_orm(rating) for rating in ratings]
         )
     except NoResultFound as e:
         logger.error(f"Error in get_ratings_service: {str(e)}")

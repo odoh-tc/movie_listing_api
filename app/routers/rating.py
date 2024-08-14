@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 from app.db.schemas.rating import RatingCreate, RatingScore, BaseResponse
 from app.services.auth import get_current_user
@@ -27,12 +27,26 @@ async def rate_movie(request: Request, rating: RatingCreate, db: Session = Depen
 
 @router.get("/{movie_id}", response_model=BaseResponse, status_code=status.HTTP_200_OK)
 @limiter.limit("10/minute")
-async def get_ratings_for_movie(request: Request, movie_id: UUID, skip: int = 0, limit: int = 10, rating_score: RatingScore = None, db: Session = Depends(get_db)):
+async def get_ratings_for_movie(
+    request: Request, 
+    movie_id: UUID, 
+    skip: int = Query(0, ge=0, description="Number of items to skip"), 
+    limit: int = Query(10, ge=1, description="Maximum number of items to return"), 
+    rating_score: RatingScore = Query(None, description="Filter ratings by specific score"),
+    db: Session = Depends(get_db)
+):
     logger.debug(f"Get ratings request for movie_id: {movie_id}, skip: {skip}, limit: {limit}, rating_score: {rating_score}")
     try:
-        ratings_data = await get_ratings_service(db, movie_id, skip=skip, limit=limit, rating_score=rating_score)
-        logger.info(f"Ratings retrieved successfully for movie_id: {movie_id}")
-        return BaseResponse(success=True, status_code=status.HTTP_200_OK, message="Ratings retrieved successfully", data=ratings_data)
+        ratings_with_aggregation = await get_ratings_service(db, movie_id, skip=skip, limit=limit, rating_score=rating_score)
+        logger.info(f"Ratings and aggregated rating retrieved successfully for movie_id: {movie_id}")
+        return BaseResponse(
+            success=True,
+            status_code=status.HTTP_200_OK,
+            message="Ratings retrieved successfully",
+            data=ratings_with_aggregation
+        )
     except HTTPException as e:
         logger.error(f"Error in get_ratings_for_movie: {e.detail}")
         raise e
+
+

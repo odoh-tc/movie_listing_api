@@ -112,12 +112,13 @@ def test_resend_verification(client, db: Session):
     user = register_user(UserCreate(**user_data), db)
 
     response = client.post(f"/auth/resend-verification?email={user_data['email']}")
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_201_CREATED
     data = response.json()
     assert data["message"] == "Verification email resent. Please check your email."
     db.refresh(user)
     assert user.verification_token is not None
     assert user.verification_token_expiry > datetime.utcnow()
+
 
 
 def test_resend_verification_for_verified_user(client, db: Session):

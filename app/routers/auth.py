@@ -52,11 +52,10 @@ def verify_email(request: Request, token: str = Query(...), db: Session = Depend
     user = verify_user_email(token, db)
     return BaseResponse(success=True, status_code=status.HTTP_200_OK, message="Email verified successfully")
 
-
-@router.post("/resend-verification", response_model=BaseResponse, status_code=status.HTTP_200_OK)
+@router.post("/resend-verification", response_model=BaseResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("3/minute")
 def resend_verification(request: Request, email: EmailStr, db: Session = Depends(get_db)):
     logger.info(f"Resend verification endpoint called for email: {email}")
     resend_verification_email(email, db)
-    return BaseResponse(success=True, status_code=status.HTTP_200_OK, message="Verification email resent. Please check your email.")
+    return BaseResponse(success=True, status_code=status.HTTP_201_CREATED, message="Verification email resent. Please check your email.")
 

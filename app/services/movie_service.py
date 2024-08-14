@@ -10,7 +10,6 @@ async def create_movie_service(db: Session, movie: MovieCreate, user_id: UUID) -
     logger.info("Service: Movie created successfully.")
     return MovieResponse.from_orm(db_movie)
 
-
 async def get_movie_service(db: Session, movie_id: UUID) -> MovieResponse:
     logger.info(f"Service: Fetching movie with ID: {movie_id}")
     movie = get_movie(db, movie_id)
@@ -21,11 +20,13 @@ async def get_movie_service(db: Session, movie_id: UUID) -> MovieResponse:
     return MovieResponse.from_orm(movie)
 
 
-async def get_movies_service(db: Session, skip: int = 0, limit: int = 10, search: str = None) -> list[MovieResponse]:
+async def get_movies_service(db: Session, skip: int = 0, limit: int = 10, search: str = None, sort_by: str = None) -> list[MovieResponse]:
     logger.info("Service: Fetching movies list.")
-    movies = get_movies(db, skip, limit, search)
+    movies = get_movies(db, skip, limit, search, sort_by)
     logger.info(f"Service: Retrieved {len(movies)} movies.")
     return [MovieResponse.from_orm(movie) for movie in movies]
+
+
 
 async def update_movie_service(db: Session, movie_id: UUID, movie: MovieUpdate, user_id: UUID) -> MovieResponse:
     logger.info(f"Service: Updating movie with ID: {movie_id}")

@@ -1,11 +1,12 @@
-import uuid
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 from app.db.models.movie import Movie
 from app.db.models.rating import Rating
-from app.db.schemas.movie import MovieCreate, MovieUpdate
+from app.db.schemas.movie import MovieCreate, MovieUpdate, SortByEnum
 from app.utils.logger import logger
 from uuid import UUID
+from sqlalchemy import desc, func
+
 
 def create_movie(db: Session, movie: MovieCreate, user_id: str):
     logger.info("Creating a new movie.")
@@ -24,6 +25,7 @@ def create_movie(db: Session, movie: MovieCreate, user_id: str):
     return db_movie
 
 
+
 def get_movie(db: Session, movie_id: UUID):
     logger.info(f"Fetching movie by ID: {movie_id}")
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
@@ -33,15 +35,31 @@ def get_movie(db: Session, movie_id: UUID):
         logger.warning(f"Movie not found with ID: {movie_id}")
     return movie
 
-def get_movies(db: Session, skip: int = 0, limit: int = 10, search: str = None):
+
+
+def get_movies(db: Session, skip: int = 0, limit: int = 10, search: str = None, sort_by: SortByEnum = None):
     logger.info("Fetching movies list.")
     query = db.query(Movie)
+    
+    if sort_by == SortByEnum.most_rated:
+        query = query.outerjoin(Rating).group_by(Movie.id).order_by(
+            desc(func.avg(Rating.score))
+        )
+    elif sort_by == SortByEnum.most_recent:
+        query = query.order_by(desc(Movie.release_date))
+    elif sort_by == SortByEnum.most_rated_and_recent:
+        query = query.outerjoin(Rating).group_by(Movie.id).order_by(
+            desc(func.avg(Rating.score)), desc(Movie.release_date)
+        )
+    
     if search:
         logger.info(f"Applying search filter: {search}")
         query = query.filter(or_(Movie.title.contains(search), Movie.description.contains(search)))
+    
     movies = query.offset(skip).limit(limit).all()
     logger.info(f"Movies retrieved: {len(movies)}")
     return movies
+
 
 
 def update_movie(db: Session, movie_id: UUID, movie: MovieUpdate):

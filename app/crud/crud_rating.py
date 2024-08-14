@@ -3,13 +3,15 @@ from app.db.models.movie import Movie
 from app.db.models.rating import Rating
 from app.db.schemas.rating import RatingCreate, RatingScore
 from typing import List, Optional
-from sqlalchemy import func, cast, Integer
+from sqlalchemy import func
 from app.utils.logger import logger
 from sqlalchemy.orm.exc import NoResultFound
 from uuid import UUID
 
+
 def get_user_rating_for_movie(db: Session, user_id: UUID, movie_id: UUID) -> Optional[Rating]:
     return db.query(Rating).filter(Rating.user_id == user_id, Rating.movie_id == movie_id).first()
+
 
 def create_or_update_rating(db: Session, rating: RatingCreate, user_id: UUID) -> Rating:
     logger.debug(f"Checking for existing rating for user_id: {user_id} and movie_id: {rating.movie_id}")
@@ -39,8 +41,9 @@ def create_or_update_rating(db: Session, rating: RatingCreate, user_id: UUID) ->
 
 
 def get_aggregated_rating(db: Session, movie_id: UUID) -> float:
-    avg_rating = db.query(func.avg(cast(Rating.score, Integer))).filter(Rating.movie_id == movie_id).scalar()
-    return avg_rating
+    avg_rating = db.query(func.avg(Rating.score)).filter(Rating.movie_id == movie_id).scalar()
+    return round(avg_rating, 2) if avg_rating is not None else None
+
 
 
 def get_ratings(db: Session, movie_id: UUID, skip: int = 0, limit: int = 10, rating_score: RatingScore = None):

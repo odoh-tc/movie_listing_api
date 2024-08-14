@@ -41,7 +41,6 @@ def get_user_by_email(db: Session, email: str):
         logger.info(f"User not found: {email}")
     return user
 
-
 def get_user_by_verification_token(db: Session, token: str) -> User:
     logger.info(f"Fetching user by verification token: {token}")
     token = db.query(User).filter(User.verification_token == token).first()

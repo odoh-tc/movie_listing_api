@@ -31,8 +31,8 @@ class AggregatedRating(BaseModel):
     average_score: Optional[float] = Field(None, description="The average rating score for the movie")
 
 class RatingsWithAggregation(BaseModel):
-    ratings: list[RatingResponse] = Field(..., description="List of individual ratings for the movie")
     aggregated_rating: AggregatedRating = Field(..., description="Aggregated rating information")
+    ratings: list[RatingResponse] = Field(..., description="List of individual ratings for the movie")
 
     model_config = ConfigDict(from_attributes=True)
 

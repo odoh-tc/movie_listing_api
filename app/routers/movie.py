@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from sqlalchemy.orm import Session
 from typing import List
-from app.db.schemas.movie import MovieCreate, MovieUpdate, BaseResponse
+from app.db.schemas.movie import MovieCreate, MovieUpdate, BaseResponse, SortByEnum
 from app.services.auth import get_current_user
 from app.db.session import get_db
 from app.services.movie_service import (
@@ -45,22 +45,33 @@ async def retrieve_movie(request: Request, movie_id: UUID, db: Session = Depends
         logger.error(f"Error in retrieve_movie: {e.detail}")
         raise e
 
+
 @router.get("/", response_model=BaseResponse, status_code=status.HTTP_200_OK)
 @limiter.limit("15/minute")
-async def list_movies(request: Request,
+async def list_movies(
+    request: Request,
+    skip: int = Query(0, ge=0, description="Number of items to skip"),
+    limit: int = Query(10, ge=1, description="Maximum number of items to return"),
+    search: str = Query(None, max_length=100, description="Search term for filtering movies"),
+    sort_by: SortByEnum = Query(None, description="Sort criteria"),
     db: Session = Depends(get_db),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1),
-    search: str = Query(None, max_length=100)
 ):
+    
     try:
         logger.debug("Request to view movies list")
-        movies = await get_movies_service(db, skip=skip, limit=limit, search=search)
+        movies = await get_movies_service(db, skip, limit, search, sort_by)
         logger.info(f"Movies list retrieved, count: {len(movies)}")
-        return BaseResponse(success=True, status_code=status.HTTP_200_OK, message="Movies retrieved successfully", data=movies)
+        return BaseResponse(
+            success=True,
+            status_code=status.HTTP_200_OK,
+            message="Movies retrieved successfully",
+            data=movies
+        )
     except HTTPException as e:
         logger.error(f"Error in retrieve_movies: {e.detail}")
         raise e
+
+
 
 @router.put("/{movie_id}", response_model=BaseResponse, status_code=status.HTTP_200_OK)
 @limiter.limit("5/minute")

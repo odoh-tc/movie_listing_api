@@ -58,12 +58,15 @@ def test_view_comments_for_movie(client, db: Session, auth_headers, test_movie):
     assert len(data["data"]) > 0
     assert data["data"][0]["content"] == comment_data["content"]
 
+
+
 def test_add_nested_comment(client, db: Session, auth_headers, test_movie):
     comment_data = {
         "content": "This is a test comment.",
         "movie_id": str(test_movie.id)
     }
     response = client.post("/comments/", json=comment_data, headers=auth_headers)
+    assert response.status_code == 201
     data = response.json()
     parent_comment_id = data["data"][0]["id"]
 
@@ -80,3 +83,20 @@ def test_add_nested_comment(client, db: Session, auth_headers, test_movie):
     assert len(data["data"]) > 0
     assert data["data"][0]["content"] == nested_comment_data["content"]
     assert str(data["data"][0]["parent_comment_id"]) == nested_comment_data["parent_comment_id"]
+
+    nested_reply_data = {
+        "content": "This is a reply to a nested comment.",
+        "parent_comment_id": str(data["data"][0]["id"])
+    }
+    response = client.post("/comments/nested", json=nested_reply_data, headers=auth_headers)
+    
+    assert response.status_code == 400
+    error_data = response.json()
+    assert "detail" in error_data
+    assert error_data["detail"] == "Replies to replies are not allowed."
+
+    response = client.get(f"/comments/{test_movie.id}", headers=auth_headers)
+    assert response.status_code == 200
+    data = response.json()
+    top_level_comment = data["data"][0]
+    assert len(top_level_comment["replies"]) == 1  # Only one direct reply should exist

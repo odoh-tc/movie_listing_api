@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -10,7 +10,8 @@ from app.crud.crud_comment import (
     get_comments as crud_get_comments, 
     create_nested_comment as crud_create_nested_comment
 )
-from app.db.schemas.comment import CommentCreate, NestedCommentCreate, CommentResponse
+from app.db.models.comment import Comment
+from app.db.schemas.comment import CommentCreate, CommentSortOrder, NestedCommentCreate, CommentResponse
 from app.utils.logger import logger
 
 
@@ -32,16 +33,25 @@ async def create_comment_service(db: Session, comment: CommentCreate, user_id: U
     except NoResultFound as e:
         logger.error(f"Error in create_comment_service: {str(e)}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    
 
-async def get_comments_service(db: Session, movie_id: UUID, skip: int = 0, limit: int = 10) -> List[CommentResponse]:
+async def get_comments_service(
+    db: Session, 
+    movie_id: UUID, 
+    skip: int = 0, 
+    limit: int = 10, 
+    sort_order: CommentSortOrder = CommentSortOrder.MOST_RECENT
+) -> List[CommentResponse]:
     try:
-        logger.debug(f"Service call to get comments for movie_id: {movie_id}, skip: {skip}, limit: {limit}")
-        comments = crud_get_comments(db, movie_id, skip, limit)
+        logger.debug(f"Service call to get comments for movie_id: {movie_id}, skip: {skip}, limit: {limit}, sort_order: {sort_order}")
+        sort_order_str = "desc" if sort_order == CommentSortOrder.MOST_RECENT else "asc"       
+        comments = crud_get_comments(db, movie_id, skip=skip, limit=limit, sort_order=sort_order_str)      
         logger.info(f"Fetched {len(comments)} comments for movie_id: {movie_id}")
         return [CommentResponse.from_orm(comment) for comment in comments]
     except NoResultFound as e:
         logger.error(f"Error in get_comments_service: {str(e)}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
 
 
 async def create_nested_comment_service(db: Session, nested_comment: NestedCommentCreate, user_id: UUID) -> CommentResponse:
@@ -50,6 +60,7 @@ async def create_nested_comment_service(db: Session, nested_comment: NestedComme
         db_comment = crud_create_nested_comment(db, nested_comment, user_id)
         logger.info(f"Nested comment created successfully with ID: {db_comment.id}")
         return CommentResponse.from_orm(db_comment)
-    except NoResultFound as e:
+    except (NoResultFound, ValueError) as e:
         logger.error(f"Error in create_nested_comment_service: {str(e)}")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+

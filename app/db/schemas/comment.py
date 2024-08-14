@@ -1,8 +1,15 @@
+from enum import Enum
 from pydantic import BaseModel, ConfigDict, Field
 from uuid import UUID
 from typing import Optional, List
 from datetime import datetime
 
+
+
+
+class CommentSortOrder(str, Enum):
+    MOST_RECENT = "most_recent"
+    FROM_OLDEST = "from_oldest"
 
 class CommentBase(BaseModel):
     content: str = Field(..., description="The content of the comment")
@@ -15,15 +22,15 @@ class CommentResponse(CommentBase):
     id: UUID = Field(..., description="Unique identifier for the comment")
     user_id: UUID = Field(..., description="Unique identifier for the user who made the comment")
     parent_comment_id: Optional[UUID] = Field(None, description="ID of the parent comment if this is a reply")
-    replies: List["CommentResponse"] = Field(default_factory=list, description="List of replies to this comment")
     created_at: datetime = Field(..., description="Timestamp when the comment was created")
     updated_at: datetime = Field(..., description="Timestamp when the comment was last updated")
+    replies: Optional[List["CommentResponse"]] = Field(default=None, description="List of replies to this comment")
 
-
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, exclude_none=True)
 
 
 CommentResponse.update_forward_refs()
+
 
 class NestedCommentCreate(BaseModel):
     content: str = Field(..., description="The content of the nested comment")

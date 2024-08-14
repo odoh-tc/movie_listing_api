@@ -70,6 +70,7 @@ def login_for_access_token(email: str, password: str, db: Session):
     return Token(access_token=access_token, token_type="bearer")
 
 
+
 def verify_user_email(token: str, db: Session):
     logger.info(f"Verifying user email with token: {token}")
     user = get_user_by_verification_token(db, token)
@@ -117,6 +118,10 @@ def resend_verification_email(email: str, db: Session):
     if user.is_verified:
         logger.warning("User email already verified")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already verified")
+    
+    if user.verification_token and datetime.utcnow() > user.verification_token_expiry:
+        user.verification_token = None
+        user.verification_token_expiry = None
 
     verification_token = str(uuid4())
     verification_token_expiry = datetime.utcnow() + timedelta(hours=settings.VERIFICATION_TOKEN_EXPIRE_HOURS)
@@ -124,7 +129,7 @@ def resend_verification_email(email: str, db: Session):
     user.verification_token = verification_token
     user.verification_token_expiry = verification_token_expiry
     db.commit()
-
     send_verification_email(user.email, verification_token)
     logger.info(f"Verification email sent to user: {email}")
     return user
+

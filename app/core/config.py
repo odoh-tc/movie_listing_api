@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     VERIFICATION_TOKEN_EXPIRE_HOURS: int
     PAPERTRAIL_URL: str
     PAPERTRAIL_PORT: int
-    
 
     
     class Config:
