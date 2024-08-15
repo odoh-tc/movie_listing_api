@@ -1,3 +1,6 @@
+"""
+This module provides functionality for retrieving the current user's details. It includes rate limiting and logging of user information requests.
+"""
 from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.orm import Session
 from app.db.models.user import User

@@ -15,14 +15,13 @@ class SortByEnum(str, Enum):
 class MovieBase(BaseModel):
     title: str = Field(..., description="The title of the movie")
     description: str = Field(..., description="A brief description of the movie")
-    duration: Optional[int] = Field(None, description="Duration of the movie in minutes")
-    release_date: Optional[date] = Field(None, description="The release date of the movie")
+    duration: int = Field(..., description="Duration of the movie in minutes")
+    release_date: date = Field(..., description="The release date of the movie")
     poster_url: Optional[AnyUrl] = Field(None, description="URL to the movie's poster image")
-
 
     @validator('duration')
     def validate_duration(cls, v):
-        if v is not None and v <= 0:
+        if v <= 0:
             raise ValueError('Duration must be greater than zero')
         return v
 
@@ -30,17 +29,8 @@ class MovieCreate(MovieBase):
     pass
 
 class MovieUpdate(BaseModel):
-    title: Optional[str] = Field(None, description="The title of the movie")
     description: Optional[str] = Field(None, description="A brief description of the movie")
-    duration: Optional[int] = Field(None, description="Duration of the movie in minutes")
-    release_date: Optional[date] = Field(None, description="The release date of the movie")
     poster_url: Optional[AnyUrl] = Field(None, description="URL to the movie's poster image")
-
-    @validator('duration')
-    def validate_duration(cls, v):
-        if v is not None and v <= 0:
-            raise ValueError('Duration must be greater than zero')
-        return v
 
 
 class MovieResponse(MovieBase):

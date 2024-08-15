@@ -1,3 +1,7 @@
+"""
+This module manages movie ratings, including creating or updating ratings and retrieving them with optional filtering.
+It supports rate limiting and logs rating-related actions.
+"""
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 from app.db.schemas.rating import RatingCreate, RatingScore, BaseResponse

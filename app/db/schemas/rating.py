@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import IntEnum
-from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional, Any
+from pydantic import BaseModel, ConfigDict, Field, validator
+from typing import Annotated, Optional, Any
 from uuid import UUID
 
 class RatingScore(IntEnum):
@@ -13,7 +13,15 @@ class RatingScore(IntEnum):
 
 class RatingBase(BaseModel):
     score: RatingScore = Field(..., description="The rating score, from 1 to 5")
-    review: Optional[str] = Field(None, description="Optional review text accompanying the rating")
+    review: Optional[str] = Field(None, max_length=2000, description="Optional review text accompanying the rating (max 2000 characters)")
+
+    @validator('review')
+    def check_review_word_count(cls, value):
+        if value is not None:
+            word_count = len(value.split())
+            if word_count > 200:
+                raise ValueError('Review must not exceed 200 words')
+        return value
 
 class RatingCreate(RatingBase):
     movie_id: UUID = Field(..., description="ID of the movie being rated")
@@ -23,6 +31,7 @@ class RatingResponse(RatingBase):
     user_id: UUID = Field(..., description="Unique identifier for the user who gave the rating")
     created_at: Optional[datetime] = Field(None, description="Timestamp when the rating was created")
     updated_at: Optional[datetime] = Field(None, description="Timestamp when the rating was last updated")
+
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -8,8 +8,28 @@ from uuid import UUID
 from sqlalchemy import desc, func
 
 
+from sqlalchemy.orm import Session
+from sqlalchemy import or_
+from app.db.models.movie import Movie
+from app.db.schemas.movie import MovieCreate
+from uuid import UUID
+from fastapi import HTTPException, status
+
 def create_movie(db: Session, movie: MovieCreate, user_id: str):
-    logger.info("Creating a new movie.")
+
+    logger.info("Checking if a movie with the same title and release date already exists.")
+    existing_movie = db.query(Movie).filter(
+        Movie.title == movie.title,
+        Movie.release_date == movie.release_date
+    ).first()
+
+    if existing_movie:
+        logger.error("A movie with this title and release date already exists.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="A movie with this title and release date already exists."
+        )
+    logger.info("No existing movie found. Proceeding to create a new movie.")
     db_movie = Movie(
         title=movie.title,
         description=movie.description,
@@ -22,7 +42,9 @@ def create_movie(db: Session, movie: MovieCreate, user_id: str):
     db.commit()
     db.refresh(db_movie)
     logger.info(f"Movie created with title: {movie.title}")
+
     return db_movie
+
 
 
 

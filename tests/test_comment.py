@@ -1,3 +1,4 @@
+from datetime import date
 import pytest
 from sqlalchemy.orm import Session
 from app.db.models.movie import Movie
@@ -20,7 +21,13 @@ def auth_headers(client, db: Session):
 
 @pytest.fixture
 def test_movie(db: Session):
-    movie = Movie(title="Test Movie", description="A test movie.")
+    movie = Movie(
+        title="Test Movie",
+        description="A test movie",
+        duration=120,
+        release_date=date(2024, 1, 1),
+        poster_url="https://example.com/poster.jpg"
+    )
     db.add(movie)
     db.commit()
     db.refresh(movie)
@@ -100,3 +107,66 @@ def test_add_nested_comment(client, db: Session, auth_headers, test_movie):
     data = response.json()
     top_level_comment = data["data"][0]
     assert len(top_level_comment["replies"]) == 1  # Only one direct reply should exist
+
+
+
+def test_add_empty_comment(client, db: Session, auth_headers, test_movie):
+    comment_data = {
+        "content": "",
+        "movie_id": str(test_movie.id)
+    }
+    response = client.post("/comments/", json=comment_data, headers=auth_headers)
+    assert response.status_code == 422
+
+
+def test_add_comment_unauthorized(client, test_movie):
+    comment_data = {
+        "content": "Unauthorized comment",
+        "movie_id": str(test_movie.id)
+    }
+    response = client.post("/comments/", json=comment_data)
+    assert response.status_code == 401
+
+
+
+def test_add_multiple_comments(client, db: Session, auth_headers, test_movie):
+    for i in range(5):
+        comment_data = {
+            "content": f"Test comment {i}",
+            "movie_id": str(test_movie.id)
+        }
+        response = client.post("/comments/", json=comment_data, headers=auth_headers)
+        assert response.status_code == 201
+
+    response = client.get(f"/comments/{test_movie.id}", headers=auth_headers)
+    data = response.json()
+    assert len(data["data"]) == 5
+
+
+def test_add_comment_exceeding_max_length(client, db: Session, auth_headers, test_movie):
+    long_comment = "A" * 1001
+    comment_data = {
+        "content" : long_comment,
+        "movie_id": str(test_movie.id)
+    }
+    response = client.post("/comments/", json=comment_data, headers=auth_headers)
+    assert response.status_code == 422
+    data = response.json()
+    assert "String should have at most 1000 characters" in data["detail"][0]["msg"]
+
+
+def test_add_comment_to_non_existent_movie(client, db: Session, auth_headers):
+    comment_data = {
+        "content": "This is a test comment.",
+        "movie_id": "00000000-0000-0000-0000-000000000000"
+    }
+    response = client.post("/comments/", json=comment_data, headers=auth_headers)
+    assert response.status_code == 404
+
+
+
+
+
+
+
+

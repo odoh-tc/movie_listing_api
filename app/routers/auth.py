@@ -1,3 +1,8 @@
+"""
+This module handles user authentication-related operations, including registration,
+login, email verification, and resending verification emails. It applies rate limiting 
+to prevent abuse and logs significant actions.
+"""
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
@@ -51,6 +56,7 @@ def verify_email(request: Request, token: str = Query(...), db: Session = Depend
     logger.info(f"Email verification endpoint called with token: {token}")
     user = verify_user_email(token, db)
     return BaseResponse(success=True, status_code=status.HTTP_200_OK, message="Email verified successfully")
+
 
 @router.post("/resend-verification", response_model=BaseResponse, status_code=status.HTTP_201_CREATED)
 @limiter.limit("3/minute")

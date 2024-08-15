@@ -27,14 +27,14 @@ Welcome to the **Movie Listing API**! This API allows you to manage movies, incl
 
 - **User Authentication:** Secure user registration and login with JWT-based authentication.
 - **Email Verification:** Upon registration, users receive an email containing a verification link. This link includes a unique token that is valid for a specific period. Users should click this link to verify their email address. If the token expires, users can request a new verification email.
-- **Movie Listing:** Users can browse a collection of movies, including details like title, description, release date, duration, and poster.
-- **Movie Ratings and Comments:** Users can rate movies and leave comments, which can be viewed by others.
+- **Movie Listing:** Users can browse a collection of movies, including details like title, description, release date, duration, and poster. Advanced search, filtering, and sorting options are available.
+- **Movie Ratings and Comments:** Users can rate movies and leave comments, which can be viewed by others. Ratings and comments can be filtered and sorted based on user preferences.
 - **Secure API:** JWT authentication ensures that only authorized users can access certain endpoints.
 - **Logging:** Logs are sent to both the terminal and Papertrail for centralized logging and monitoring, providing insights into application performance and issues.
 - **Rate Limiting:** SlowAPI is used to apply rate limits to API endpoints to prevent abuse and ensure fair usage.
 - **Cloud Deployment:** The API is deployed on a cloud platform, ensuring high availability and scalability.
 - **Comprehensive Testing:** Unit and integration tests are implemented to ensure the reliability of the API.
-- **Documentation:** The API is documented using OpenAPI/Swagger, providing an interactive interface for exploring the endpoints.
+- **Documentation:** The API is documented using OpenAPI/Swagger for an interactive interface to explore endpoints, complemented by a detailed README for easy setup, deployment, and usage instructions.
 
 ## Requirements
 
@@ -79,9 +79,9 @@ PAPERTRAIL_PORT=
 1. Clone the repository
 
    ```sh
-   git clone https://github.com/yourusername/movielistingapi.git
+   git clone https://github.com/yourusername/movie_listing_api.git
 
-   cd movielistingapi
+   cd movie_listing_api
    ```
 
 2. Create and activate a virtual environment
@@ -224,12 +224,14 @@ Ensure that the TEST_DATABASE_URL and other environment variables are correctly 
 
   - **Description**: Authenticate and get an access token.
   - **Request Body**:
+
     ```json
     {
       "email": "user@example.com",
       "password": "password123"
     }
     ```
+
   - **Response**:
     ```json
     {
@@ -296,10 +298,12 @@ Ensure that the TEST_DATABASE_URL and other environment variables are correctly 
     ```
 
 - **GET /auth/verify-email**
+
   - **Description**: Verify a user's email using a token.
   - **Query Parameters**:
     - `token` (string): The email verification token.
   - **Response**:
+
     ```json
     {
       "success": true,
@@ -307,6 +311,7 @@ Ensure that the TEST_DATABASE_URL and other environment variables are correctly 
       "message": "Email verified successfully"
     }
     ```
+
   - **Error Response**:
     ```json
     {
@@ -350,7 +355,7 @@ Ensure that the TEST_DATABASE_URL and other environment variables are correctly 
 **POST /movies/**
 
 **Description:**  
-This endpoint allows an authenticated user to add a new movie to the database.
+This endpoint allows an authenticated user to add a new movie.
 
 **Request:**
 
@@ -360,16 +365,15 @@ This endpoint allows an authenticated user to add a new movie to the database.
 
 - **Body:**
 
-  ````json
+  ```json
   {
     "title": "Inception",
     "description": "A mind-bending thriller about dreams within dreams.",
     "duration": 148,
     "release_date": "2010-07-16",
     "poster_url": "https://example.com/poster.jpg"
-  }```
-
-  ````
+  }
+  ```
 
 - **Response**:
 
@@ -454,7 +458,7 @@ List movies with optional search, pagination, and sorting.
   - `skip`: Number of items to skip (default: 0).
   - `limit`: Maximum number of items to return (default: 10).
   - `search`: Search term for filtering movies (optional).
-  - `sort_by`: Sort criteria (optional).
+  - `sort_by`: Sort criteria (options: most_rated, most_recent, most_rated_and_recent).
 
 - **Responses**:
 
@@ -636,7 +640,7 @@ Delete a specific movie.
 
     - **Path Parameter**:
 
-      - `movie_id`: The UUID of the movie.
+      - `movie_id`: The unique identifier of the movie.
 
     - **Query Parameters** (optional):
 
@@ -655,7 +659,7 @@ Delete a specific movie.
         "message": "Ratings retrieved successfully",
         "data": {
           "aggregated_rating": {
-            "average_score": 4.5
+            "average_score": 5
           },
           "ratings": [
             {
@@ -825,7 +829,7 @@ Delete a specific movie.
           {
             "id": "123e4567-e89b-12d3-a456-426614174003",
             "content": "I agree! The special effects were stunning.",
-            "movie_id": "123e4567-e89b-12d3-a456-426614174000",
+            "movie_id": null,
             "user_id": "123e4567-e89b-12d3-a456-426614174004",
             "parent_comment_id": "123e4567-e89b-12d3-a456-426614174001",
             "created_at": "2024-08-14T12:05:00Z",

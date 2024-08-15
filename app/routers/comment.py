@@ -1,9 +1,12 @@
-from datetime import datetime
+"""
+This module handles movie comments, including adding, viewing, and nesting comments. 
+It supports rate limiting and logs all significant actions.
+"""
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from app.db.schemas.comment import CommentCreate, CommentResponse, CommentSortOrder, NestedCommentCreate, BaseResponse
+from app.db.schemas.comment import CommentCreate, CommentSortOrder, NestedCommentCreate, BaseResponse
 from app.services.auth import get_current_user
 from app.db.session import get_db
 from app.services.comment_service import (

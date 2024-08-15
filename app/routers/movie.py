@@ -1,3 +1,8 @@
+"""
+This module handles operations related to movies, including adding, retrieving,
+updating, and deleting movies. It supports pagination, searching, and sorting
+of movie listings. It also enforces rate limiting and logs all significant actions.
+"""
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from sqlalchemy.orm import Session
 from typing import List
@@ -19,7 +24,7 @@ from app.utils.rate_limiter import limiter
 router = APIRouter()
 
 @router.post("/", response_model=BaseResponse, status_code=status.HTTP_201_CREATED)
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def add_movie(request: Request, movie: MovieCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         logger.debug(f"Request to add movie: {movie} from user_id: {current_user.id}")

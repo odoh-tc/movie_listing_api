@@ -5,15 +5,14 @@ from typing import Optional, List
 from datetime import datetime
 
 
-
-
 class CommentSortOrder(str, Enum):
     MOST_RECENT = "most_recent"
     FROM_OLDEST = "from_oldest"
 
 class CommentBase(BaseModel):
-    content: str = Field(..., description="The content of the comment")
+    content: str = Field(..., min_length=1, max_length=1000, description="The content of the comment")
     movie_id: Optional[UUID] = Field(None, description="ID of the movie associated with the comment")
+
 
 class CommentCreate(CommentBase):
     pass
@@ -24,7 +23,14 @@ class CommentResponse(CommentBase):
     parent_comment_id: Optional[UUID] = Field(None, description="ID of the parent comment if this is a reply")
     created_at: datetime = Field(..., description="Timestamp when the comment was created")
     updated_at: datetime = Field(..., description="Timestamp when the comment was last updated")
-    replies: Optional[List["CommentResponse"]] = Field(default=None, description="List of replies to this comment")
+    replies: Optional[List["CommentResponse"]] = Field(default=None, description="List of replies to this comment", exclude_unset=True)
+
+
+    def dict(self, *args, **kwargs):
+        data = super().dict(*args, **kwargs)
+        if data.get("replies") == []:
+            data.pop("replies")
+        return data
 
     model_config = ConfigDict(from_attributes=True, exclude_none=True)
 
@@ -33,7 +39,7 @@ CommentResponse.update_forward_refs()
 
 
 class NestedCommentCreate(BaseModel):
-    content: str = Field(..., description="The content of the nested comment")
+    content: str = Field(..., max_length=1000, description="The content of the nested comment")
     parent_comment_id: UUID = Field(..., description="ID of the parent comment")
 
 class BaseResponse(BaseModel):

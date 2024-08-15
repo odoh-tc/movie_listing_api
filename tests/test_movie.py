@@ -75,10 +75,10 @@ def test_edit_movie(client, db: Session, auth_headers):
     movie_id = response.json()["data"]["id"]
 
     updated_movie_data = {
-        "title": "Updated Test Movie",
+        "title": "Test Movie",
         "description": "This is an updated test movie description.",
-        "duration": 130,
-        "release_date": "2024-02-01",
+        "duration": 120,
+        "release_date": "2024-01-01",
         "poster_url": "https://example.com/updated_poster.jpg"
     }
     response = client.put(f"/movies/{movie_id}", json=updated_movie_data, headers=auth_headers)
@@ -107,3 +107,22 @@ def test_delete_movie(client, db: Session, auth_headers):
 
     response = client.get(f"/movies/{movie_id}", headers=auth_headers)
     assert response.status_code == 404
+
+
+def test_create_duplicate_movie(client, db: Session, auth_headers):
+    movie_data = {
+        "title": "Test Movie",
+        "description": "This is a test movie description.",
+        "duration": 120,
+        "release_date": "2024-01-01",
+        "poster_url": "https://example.com/poster.jpg"
+    }
+    response = client.post("/movies/", json=movie_data, headers=auth_headers)
+    assert response.status_code == 201
+
+    response = client.post("/movies/", json=movie_data, headers=auth_headers)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "A movie with this title and release date already exists."
+
+
+
