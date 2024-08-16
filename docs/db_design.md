@@ -34,16 +34,18 @@
   - `owner`: Relationship to `User` model, representing the user who listed the movie.
   - `ratings`: Relationship to `Rating` model, representing ratings associated with the movie.
   - `comments`: Relationship to `Comment` model, representing comments associated with the movie.
+- **Constraints:**
+  - Unique constraint on `title` and `release_date` to ensure no duplicate movies with the same title and release date.
 
 ## Ratings Table
 
-| Column   | Type    | Description                    |
-| -------- | ------- | ------------------------------ |
-| id       | UUID    | Primary Key                    |
-| score    | Integer | Rating score (e.g., 1-5 stars) |
-| review   | String  | Optional review text           |
-| movie_id | UUID    | Foreign Key to Movies          |
-| user_id  | UUID    | Foreign Key to Users           |
+| Column   | Type    | Description           |
+| -------- | ------- | --------------------- |
+| id       | UUID    | Primary Key           |
+| score    | Integer | Rating score (1-5)    |
+| review   | String  | Optional review text  |
+| movie_id | UUID    | Foreign Key to Movies |
+| user_id  | UUID    | Foreign Key to Users  |
 
 - **Relationships:**
   - `movie`: Relationship to `Movie` model, representing the movie being rated.

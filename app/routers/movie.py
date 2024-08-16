@@ -29,8 +29,8 @@ async def add_movie(request: Request, movie: MovieCreate, db: Session = Depends(
     try:
         logger.debug(f"Request to add movie: {movie} from user_id: {current_user.id}")
         movie_data = await create_movie_service(db, movie, current_user.id)
-        logger.info(f"Movie created successfully for user_id: {current_user.id}")
-        return BaseResponse(success=True, status_code=status.HTTP_201_CREATED, message="Movie created successfully", data=movie_data)
+        logger.info(f"Movie added successfully for user_id: {current_user.id}")
+        return BaseResponse(success=True, status_code=status.HTTP_201_CREATED, message="Movie added successfully", data=movie_data)
     except HTTPException as e:
         logger.error(f"Error in add_movie: {e.detail}")
         raise e

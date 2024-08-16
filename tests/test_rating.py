@@ -97,27 +97,27 @@ def test_view_ratings_for_movie(client, db: Session, auth_headers, test_movie):
 
 
 def test_create_rating_exceeding_max_length(client, db: Session, auth_headers, test_movie):
-    long_review = "A" * 2001  # Create a review that exceeds the 2000 character limit
+    long_review = "A" * 2001
     rating_data = {
         "movie_id": str(test_movie.id),
         "score": RatingScore.five_stars,
         "review": long_review
     }
     response = client.post("/ratings/", json=rating_data, headers=auth_headers)
-    assert response.status_code == 422  # Unprocessable Entity
+    assert response.status_code == 422
     data = response.json()
     assert "String should have at most 2000 characters" in data["detail"][0]["msg"]
 
 
 def test_create_rating_exceeding_word_count(client, db: Session, auth_headers, test_movie):
-    long_review = "word " * 201  # Create a review that exceeds the 200 word limit
+    long_review = "word " * 201
     rating_data = {
         "movie_id": str(test_movie.id),
         "score": RatingScore.five_stars,
         "review": long_review
     }
     response = client.post("/ratings/", json=rating_data, headers=auth_headers)
-    assert response.status_code == 422  # Unprocessable Entity
+    assert response.status_code == 422
     data = response.json()
     assert "Review must not exceed 200 words" in data["detail"][0]["msg"]
 
@@ -130,7 +130,7 @@ def test_unauthorized_rating_creation(client):
         "review": "Great movie!"
     }
     response = client.post("/ratings/", json=rating_data)
-    assert response.status_code == 401  # Unauthorized
+    assert response.status_code == 401
     data = response.json()
     assert "Not authenticated" in data["detail"]
 
@@ -147,7 +147,7 @@ def test_invalid_movie_id(client, auth_headers):
 
 
 def test_invalid_rating_score(client, auth_headers):
-    invalid_score = 6  # Assuming the valid scores are 1 through 5
+    invalid_score = 6
     rating_data = {
         "movie_id":"00000000-0000-0000-0000-000000000000",
         "score": invalid_score,

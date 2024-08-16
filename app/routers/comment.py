@@ -27,8 +27,8 @@ async def add_comment_to_movie(request: Request, comment: CommentCreate, db: Ses
     try:
         logger.debug(f"Request to add comment: {comment} from user_id: {current_user.id}")
         comment_data = await create_comment_service(db, comment, current_user.id)
-        logger.info(f"Comment created successfully for user_id: {current_user.id}")
-        return BaseResponse(success=True, status_code=status.HTTP_201_CREATED, message="Comment created successfully", data=[comment_data])  # Wrap in list if needed
+        logger.info(f"Comment added successfully for user_id: {current_user.id}")
+        return BaseResponse(success=True, status_code=status.HTTP_201_CREATED, message="Comment added successfully", data=[comment_data])  # Wrap in list if needed
     except HTTPException as e:
         logger.error(f"Error in add_comment_to_movie: {e.detail}")
         raise e
@@ -62,8 +62,8 @@ async def add_nested_comment(request: Request, nested_comment: NestedCommentCrea
     try:
         logger.debug(f"Request to add nested comment: {nested_comment} from user_id: {current_user.id}")
         comment_data = await create_nested_comment_service(db, nested_comment, current_user.id)
-        logger.info(f"Nested comment created successfully for user_id: {current_user.id}")
-        return BaseResponse(success=True, status_code=status.HTTP_201_CREATED, message="Nested comment created successfully", data=[comment_data])
+        logger.info(f"Nested comment added successfully for user_id: {current_user.id}")
+        return BaseResponse(success=True, status_code=status.HTTP_201_CREATED, message="Nested comment added successfully", data=[comment_data])
     except HTTPException as e:
         logger.error(f"Error in add_nested_comment: {e.detail}")
         raise e

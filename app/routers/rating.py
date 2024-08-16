@@ -23,7 +23,7 @@ async def rate_movie(request: Request, rating: RatingCreate, db: Session = Depen
     try:
         rating_data = await create_or_update_rating_service(db, rating, current_user.id)
         logger.info(f"Rating created or updated successfully for user_id: {current_user.id}")
-        return BaseResponse(success=True, status_code=status.HTTP_201_CREATED, message="Rating created or updated successfully", data=rating_data)
+        return BaseResponse(success=True, status_code=status.HTTP_201_CREATED, message="Movie rated successfully", data=rating_data)
     except HTTPException as e:
         logger.error(f"Error in rate_movie: {e.detail}")
         raise e

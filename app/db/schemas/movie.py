@@ -5,8 +5,6 @@ from datetime import datetime, date
 from uuid import UUID
 
 
-
-
 class SortByEnum(str, Enum):
     most_rated = "most_rated"
     most_recent = "most_recent"
