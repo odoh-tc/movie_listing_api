@@ -336,7 +336,7 @@ Ensure that the TEST_DATABASE_URL and other environment variables are correctly 
         "id": "123e4567-e89b-12d3-a456-426614174000",
         "first_name": "John",
         "last_name": "Doe",
-        "is_verified": false,
+        "is_verified": true,
         "created_at": "2024-08-14T12:34:56Z"
       }
     }
