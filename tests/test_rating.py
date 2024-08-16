@@ -96,7 +96,7 @@ def test_view_ratings_for_movie(client, db: Session, auth_headers, test_movie):
     assert data["data"]["aggregated_rating"]["average_score"] is not None
 
 
-def test_create_rating_exceeding_max_length(client, db: Session, auth_headers, test_movie):
+def test_create_rating_with_review_exceeding_max_length(client, db: Session, auth_headers, test_movie):
     long_review = "A" * 2001
     rating_data = {
         "movie_id": str(test_movie.id),
