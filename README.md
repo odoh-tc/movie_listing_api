@@ -44,27 +44,16 @@ Welcome to the **Movie Listing API**! This API allows you to manage movies, incl
 
 ## Environment Variables
 
-Create a `.env` file in the root directory of your project and add the following:
+To set up environment variables, follow these steps:
 
-```env
-DATABASE_URL=postgresql://<db_user>:<db_password>@<db_host>:<db_port>/<db_name>
-TEST_DATABASE_URL=
-TESTING=false
-SECRET_KEY=<your_secret_key>
-ACCESS_TOKEN_EXPIRE_MINUTES=
-ALGORITHM=
-POSTGRES_USER=
-POSTGRES_PASSWORD=
-POSTGRES_DB=
-SMTP_SERVER=
-SMTP_PORT=
-SMTP_SENDER=
-SMTP_PASSWORD=
-BASE_URL=<your_base_url>
-VERIFICATION_TOKEN_EXPIRE_HOURS=
-PAPERTRAIL_URL=
-PAPERTRAIL_PORT=
-```
+1. **Copy the `.env.sample` file**:
+
+   - A `.env.sample` file is provided in the root directory of the project.
+   - Rename it to `.env`.
+
+2. **Update the `.env` file**:
+
+   - Open the newly created `.env` file and replace the placeholder values with your actual configuration details.
 
 ## Middleware
 

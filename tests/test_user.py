@@ -25,6 +25,7 @@ def auth_headers(client, db: Session):
     assert "created_at" in data["data"]
 
 
+
 def test_get_current_user_details_without_auth(client):
     response = client.get("/users/me")
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
