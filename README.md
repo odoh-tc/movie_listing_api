@@ -485,7 +485,7 @@ List movies with optional search, pagination, and sorting.
 
   **PUT /movies/{movie_id}**
 
-Update a specific movie.
+  This endpoint allows an authenticated user to update a specific movie that the current user added.
 
 - **Path Parameters**:
 
@@ -542,7 +542,7 @@ Update a specific movie.
 
 **DELETE /movies/{movie_id}**
 
-Delete a specific movie.
+     This endpoint allows an authenticated user to delete a specific movie that the current user added.
 
 - **Path Parameters**:
 
