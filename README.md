@@ -383,7 +383,7 @@ This endpoint allows an authenticated user to add a new movie.
     {
       "success": true,
       "status_code": 201,
-      "message": "Movie created successfully",
+      "message": "Movie added successfully",
       "data": {
         "id": "123e4567-e89b-12d3-a456-426614174000",
         "title": "Inception",
@@ -609,7 +609,7 @@ Delete a specific movie.
       {
         "success": true,
         "status_code": 201,
-        "message": "Rating created or updated successfully",
+        "message": "Movie rated successfully",
         "data": {
           "id": "123e4567-e89b-12d3-a456-426614174001",
           "movie_id": "123e4567-e89b-12d3-a456-426614174000",
@@ -714,7 +714,7 @@ Delete a specific movie.
       {
         "success": true,
         "status_code": 201,
-        "message": "Comment created successfully",
+        "message": "Comment added successfully",
         "data": [
           {
             "id": "123e4567-e89b-12d3-a456-426614174001",
@@ -824,7 +824,7 @@ Delete a specific movie.
       {
         "success": true,
         "status_code": 201,
-        "message": "Nested comment created successfully",
+        "message": "Nested comment added successfully",
         "data": [
           {
             "id": "123e4567-e89b-12d3-a456-426614174003",
