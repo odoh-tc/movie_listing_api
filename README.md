@@ -499,10 +499,7 @@ List movies with optional search, pagination, and sorting.
 
   ```json
   {
-    "title": "Inception",
     "description": "An updated description for the movie.",
-    "duration": 148,
-    "release_date": "2010-07-16",
     "poster_url": "https://example.com/new_poster.jpg"
   }
   ```
