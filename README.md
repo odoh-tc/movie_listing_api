@@ -79,7 +79,7 @@ PAPERTRAIL_PORT=
 1. Clone the repository
 
    ```sh
-   git clone https://github.com/yourusername/movie_listing_api.git
+   git clone https://github.com/username/movie_listing_api.git
 
    cd movie_listing_api
    ```
