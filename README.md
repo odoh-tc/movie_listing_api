@@ -539,7 +539,7 @@ List movies with optional search, pagination, and sorting.
 
 **DELETE /movies/{movie_id}**
 
-     This endpoint allows an authenticated user to delete a specific movie that the current user added.
+This endpoint allows an authenticated user to delete a specific movie that the current user added.
 
 - **Path Parameters**:
 
